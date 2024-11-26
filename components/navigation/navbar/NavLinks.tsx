@@ -5,19 +5,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
+import { SheetClose } from "@/components/ui/sheet";
 import { sidebarLinks } from "@/constants";
 import { cn } from "@/lib/utils";
-import { SheetClose } from "@/components/ui/sheet";
 
 const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
-  const pathName = usePathname();
+  const pathname = usePathname();
   const userId = 1;
   return (
     <>
       {sidebarLinks.map((item) => {
         const isActive =
-          (pathName.includes(item.route) && item.route.length > 1) ||
-          pathName === item.route;
+          (pathname.includes(item.route) && item.route.length > 1) ||
+          pathname === item.route;
 
         if (item.route === "/profile") {
           if (userId) item.route = `${item.route}/${userId}`;
@@ -31,7 +31,7 @@ const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
             className={cn(
               isActive
                 ? "primary-gradient rounded-lg text-light-900"
-                : "text-dark-300_light900",
+                : "text-dark300_light900",
               "flex items-center justify-start gap-4 bg-transparent p-4"
             )}
           >
@@ -64,4 +64,5 @@ const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
     </>
   );
 };
+
 export default NavLinks;
