@@ -1,21 +1,19 @@
+// import { title } from "process";
+
 import Link from "next/link";
 
-import QuestionCard from "@/components/cards/QuestionCard";
-//import HomeFilter from "@/components/filters/HomeFilter";
+// import QuestionCard from "@/components/cards/QuestionCard";
+import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
-import { title } from "process";
 
 const questions = [
   {
     _id: "1",
     title: "How to learn React?",
     description: "I want to learn React, can anyone help me?",
-    tags: [
-      { _id: "1", name: "React" },
-      { _id: "2", name: "JavaScript" },
-    ],
+    tags: [{ _id: "2", name: "React" }],
     author: {
       _id: "1",
       name: "John Doe",
@@ -53,15 +51,17 @@ interface SearchParams {
 }
 
 const Home = async ({ searchParams }: SearchParams) => {
-  const { query = "" /* , filter = ""  */ } = await searchParams;
+  const { query = "", filter = "" } = await searchParams;
 
-  const filteredQuestions = questions.filter(
-    (question) => question.title.toLowerCase().includes(query?.toLowerCase())
-    /* const matchesFilter = filter
+  const filteredQuestions = questions.filter((question) => {
+    const matchesQuery = question.title
+      .toLowerCase()
+      .includes(query?.toLowerCase());
+    const matchesFilter = filter
       ? question.tags[0].name.toLowerCase() === filter.toLowerCase()
       : true;
-    return matchesQuery && matchesFilter; */
-  );
+    return matchesQuery && matchesFilter;
+  });
 
   return (
     <>
@@ -83,11 +83,11 @@ const Home = async ({ searchParams }: SearchParams) => {
           otherClasses="flex-1"
         />
       </section>
-      {/*<HomeFilter />*/}
+      <HomeFilter />
       <div className="mt-10 flex w-full flex-col gap-6">
         {filteredQuestions.map((question) => (
           <h1 key={question._id}> {question.title} </h1>
-          //<QuestionCard key={question._id} question={question} />
+          // <QuestionCard key={question._id} question={question} />
         ))}
       </div>
     </>
