@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-// import QuestionCard from "@/components/cards/QuestionCard";
+import QuestionCard from "@/components/cards/QuestionCard";
 import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ const questions = [
     description: "I want to learn JavaScript, can anyone help me?",
     tags: [
       { _id: "1", name: "JavaScript" },
-      { _id: "2", name: "JavaScript" },
+      { _id: "2", name:"React Native" },
     ],
     author: {
       _id: "1",
@@ -86,8 +86,7 @@ const Home = async ({ searchParams }: SearchParams) => {
       <HomeFilter />
       <div className="mt-10 flex w-full flex-col gap-6">
         {filteredQuestions.map((question) => (
-          <h1 key={question._id}> {question.title} </h1>
-          // <QuestionCard key={question._id} question={question} />
+          <QuestionCard key={question._id} question={question} />
         ))}
       </div>
     </>
