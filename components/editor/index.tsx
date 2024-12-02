@@ -1,4 +1,4 @@
-/* "use client";
+"use client";
 
 import {
   MDXEditor,
@@ -126,4 +126,3 @@ const Editor = ({ value, editorRef, fieldChange }: Props) => {
 };
 
 export default Editor;
- */
