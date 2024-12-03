@@ -31,7 +31,7 @@ const questions = [
     description: "I want to learn JavaScript, can anyone help me?",
     tags: [
       { _id: "1", name: "JavaScript" },
-      { _id: "2", name:"React Native" },
+      { _id: "2", name: "React Native" },
     ],
     author: {
       _id: "1",
