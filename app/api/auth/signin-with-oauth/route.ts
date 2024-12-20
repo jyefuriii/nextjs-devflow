@@ -13,7 +13,6 @@ export async function POST(request: Request) {
   const { provider, providerAccountId, user } = await request.json();
 
   await dbConnect();
-
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -29,7 +28,7 @@ export async function POST(request: Request) {
 
     const { name, username, email, image } = user;
 
-    const slugifiedUsername = slugify(username, {
+    const slugifiedUsername = slugify(username || "user", {
       lower: true,
       strict: true,
       trim: true,

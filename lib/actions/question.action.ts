@@ -29,7 +29,7 @@ export async function createQuestion(
   }
 
   const { title, content, tags } = validationResult.params!;
-  const userId = validationResult.session?.user?.id;
+  const userId = validationResult?.session?.user?.id;
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -125,7 +125,7 @@ export async function editQuestion(
 
     const tagsToRemove = question.tags.filter(
       (tag: ITagDoc) =>
-        !tags.some((t:string) => t.toLowerCase() === tag.name.toLowerCase())
+        !tags.some((t) => t.toLowerCase() === tag.name.toLowerCase())
     );
 
     const newTagDocuments = [];
