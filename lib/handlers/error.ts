@@ -6,6 +6,20 @@ import logger from "../logger";
 
 export type ResponseType = "api" | "server";
 
+// ErrorResponse using a factory function
+export const ErrorResponse = (message: string) => {
+  const error = new Error(message);
+  error.name = "ErrorResponse";
+  return error;
+};
+
+// Type guard to check if the response is an ErrorResponse
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isErrorResponse = (response: any): response is Error & { name: string } => {
+  return response instanceof Error && response.name === "ErrorResponse";
+};
+
+
 const formatResponse = (
   responseType: ResponseType,
   status: number,

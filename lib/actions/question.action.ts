@@ -7,7 +7,7 @@ import TagQuestion from "@/database/tag-question.model";
 import Tag, { ITagDoc } from "@/database/tag.model";
 
 import action from "../handlers/action";
-import handleError from "../handlers/error";
+import handleError, { ErrorResponse, isErrorResponse } from "../handlers/error";
 import {
   AskQuestionSchema,
   EditQuestionSchema,
@@ -24,12 +24,12 @@ export async function createQuestion(
     authorize: true,
   });
 
-  if (validationResult instanceof Error) {
+  if (isErrorResponse(validationResult)) {
     return handleError(validationResult) as ErrorResponse;
   }
 
   const { title, content, tags } = validationResult.params!;
-  const userId = validationResult.session?.user?.id;
+  const userId = validationResult?.session?.user?.id;
 
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -89,7 +89,7 @@ export async function editQuestion(
     authorize: true,
   });
 
-  if (validationResult instanceof Error) {
+  if (isErrorResponse(validationResult)) {
     return handleError(validationResult) as ErrorResponse;
   }
 
@@ -196,7 +196,7 @@ export async function getQuestion(
     authorize: true,
   });
 
-  if (validationResult instanceof Error) {
+  if (isErrorResponse(validationResult)) {
     return handleError(validationResult) as ErrorResponse;
   }
 
