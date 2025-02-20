@@ -37,3 +37,22 @@ interface GetTagQuestionsParams extends Omit<PaginatedSearchParams, "filter"> {
 interface IncrementViewsParams {
   questionId: string;
 }
+
+interface CreateAnswerParams {
+  questionId: string;
+  content: string;
+}
+
+interface GetAnswersParams extends PaginatedSearchParams {
+  questionId: string;
+}
+
+interface CreateVoteParams {
+  targetId: string;
+  targetType: "question" | "answer";
+  voteType: "upvote" | "downvote";
+}
+
+interface UpdateVoteCountParams extends CreateVoteParams {
+  change: 1 | -1;
+}

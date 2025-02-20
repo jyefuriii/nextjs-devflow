@@ -29,6 +29,10 @@ export async function createQuestion(
     return handleError(validationResult) as ErrorResponse;
   }
 
+  if (!("params" in validationResult) || !("session" in validationResult)) {
+    return handleError(new Error("Invalid validation result")) as ErrorResponse;
+  }
+
   const { title, content, tags } = validationResult.params!;
   const userId = validationResult?.session?.user?.id;
 
@@ -94,6 +98,10 @@ export async function editQuestion(
     return handleError(validationResult) as ErrorResponse;
   }
 
+  if (!("params" in validationResult) || !("session" in validationResult)) {
+    return handleError(new Error("Invalid validation result")) as ErrorResponse;
+  }
+
   const { title, content, tags, questionId } = validationResult.params!;
   const userId = validationResult?.session?.user?.id;
 
@@ -118,7 +126,7 @@ export async function editQuestion(
     }
 
     const tagsToAdd = tags.filter(
-      (tag) =>
+      (tag: string) =>
         !question.tags.some((t: ITagDoc) =>
           t.name.toLowerCase().includes(tag.toLowerCase())
         )
@@ -126,7 +134,7 @@ export async function editQuestion(
 
     const tagsToRemove = question.tags.filter(
       (tag: ITagDoc) =>
-        !tags.some((t) => t.toLowerCase() === tag.name.toLowerCase())
+        !tags.some((t: string) => t.toLowerCase() === tag.name.toLowerCase())
     );
 
     const newTagDocuments = [];
@@ -203,6 +211,10 @@ export async function getQuestion(
 
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
+  }
+
+  if (!("params" in validationResult) || !("session" in validationResult)) {
+    return handleError(new Error("Invalid validation result")) as ErrorResponse;
   }
 
   const { questionId } = validationResult.params!;
@@ -301,6 +313,10 @@ export async function incrementViews(
 
   if (validationResult instanceof Error) {
     return handleError(validationResult) as ErrorResponse;
+  }
+
+  if (!("params" in validationResult) || !("session" in validationResult)) {
+    return handleError(new Error("Invalid validation result")) as ErrorResponse;
   }
 
   const { questionId } = validationResult.params!;

@@ -8,24 +8,22 @@ import { auth } from "@/auth";
 import { UnauthorizedError, ValidationError } from "../http-errors";
 import dbConnect from "../mongoose";
 
-
 type ActionOptions<T> = {
   params?: T;
   schema?: ZodSchema<T>;
   authorize?: boolean;
 };
 
-type ActionResult<T> =
-  | { params: T; session: Session | null }
-  | ValidationError
-  | Error
-  | UnauthorizedError;
+// 1. Checking whether the schema and params are provided and validated.
+// 2. Checking whether the user is authorized.
+// 3. Connecting to the database.
+// 4. Returning the params and session.
 
 async function action<T>({
   params,
   schema,
   authorize = false,
-}: ActionOptions<T>): Promise<ActionResult<T>> {
+}: ActionOptions<T>) {
   if (schema && params) {
     try {
       schema.parse(params);
@@ -38,10 +36,6 @@ async function action<T>({
         return new Error("Schema validation failed");
       }
     }
-  }
-
-  if (!params) {
-    return new Error("Params are required");
   }
 
   let session: Session | null = null;

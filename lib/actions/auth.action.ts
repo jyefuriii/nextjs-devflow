@@ -106,7 +106,6 @@ export async function signInWithCredentials(
 
     return { success: true };
   } catch (error) {
-      console.log("URIIII", process.env.MONGODB_URI);
-      return handleError(error) as ErrorResponse;
+    return handleError(error) as ErrorResponse;
   }
 }
