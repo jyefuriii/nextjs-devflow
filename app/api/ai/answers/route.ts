@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { mistral } from "@ai-sdk/mistral";
 import { generateText } from "ai";
 import { NextResponse } from "next/server";
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     }
 
     const { text } = await generateText({
-      model: openai("gpt-4-turbo"),
+      model: mistral("mistral-small-latest"),
       prompt: `Generate a markdown-formatted response to the following question: "${question}".  
       
       Consider the provided context:  
