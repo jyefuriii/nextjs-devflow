@@ -72,4 +72,15 @@ export const api = {
         body: JSON.stringify({ question, content, userAnswer }),
       }),
   },
+  votes: {
+    submitVote: async (
+      targetId: string,
+      targetType: "question" | "answer",
+      voteType: "upvote" | "downvote"
+    ) =>
+      fetchHandler(`${API_BASE_URL}/vote`, {
+        method: "POST",
+        body: JSON.stringify({ targetId, targetType, voteType }),
+      }),
+  },
 };

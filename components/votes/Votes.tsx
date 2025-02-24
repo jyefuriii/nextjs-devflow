@@ -5,25 +5,37 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 import { toast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import { formatNumber } from "@/lib/utils";
 
 interface Params {
+  targetId: string;
+  targetType: "question" | "answer";
   upvotes: number;
   hasupVoted: boolean;
   downvotes: number;
   hasdownVoted: boolean;
 }
 
-const Votes = ({ upvotes, downvotes, hasupVoted, hasdownVoted }: Params) => {
-  const session = useSession();
-  const userId = session.data?.user?.id;
+const Votes = ({
+  targetId,
+  targetType,
+  upvotes,
+  downvotes,
+  hasupVoted,
+  hasdownVoted,
+}: Params) => {
+  const { data: session, status } = useSession();
+  const userId = session?.user?.id ?? null;
 
-  // Local state for votes
   const [localUpvotes, setLocalUpvotes] = useState(upvotes);
   const [localDownvotes, setLocalDownvotes] = useState(downvotes);
   const [localHasUpvoted, setLocalHasUpvoted] = useState(hasupVoted);
   const [localHasDownvoted, setLocalHasDownvoted] = useState(hasdownVoted);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Prevent vote action if session is still loading
+  const isSessionLoading = status === "loading";
 
   const handleVote = async (voteType: "upvote" | "downvote") => {
     if (!userId) {
@@ -36,48 +48,35 @@ const Votes = ({ upvotes, downvotes, hasupVoted, hasdownVoted }: Params) => {
     setIsLoading(true);
 
     try {
-      if (voteType === "upvote") {
-        if (localHasUpvoted) {
-          // Remove upvote
-          setLocalUpvotes(Math.max(0, localUpvotes - 1));
-          setLocalHasUpvoted(false);
-        } else {
-          // Add upvote
-          setLocalUpvotes(localUpvotes + 1);
-          setLocalHasUpvoted(true);
+      const response = await api.votes.submitVote(
+        targetId,
+        targetType,
+        voteType
+      );
 
-          // Remove downvote if previously downvoted
-          if (localHasDownvoted) {
-            setLocalDownvotes(Math.max(0, localDownvotes - 1));
-            setLocalHasDownvoted(false);
-          }
-        }
-      } else {
-        if (localHasDownvoted) {
-          // Remove downvote
-          setLocalDownvotes(Math.max(0, localDownvotes - 1));
-          setLocalHasDownvoted(false);
-        } else {
-          // Add downvote
-          setLocalDownvotes(localDownvotes + 1);
-          setLocalHasDownvoted(true);
-
-          // Remove upvote if previously upvoted
-          if (localHasUpvoted) {
-            setLocalUpvotes(Math.max(0, localUpvotes - 1));
-            setLocalHasUpvoted(false);
-          }
-        }
+      // Ensure response is a valid object before type assertion
+      if (!response || typeof response !== "object") {
+        throw new Error("Invalid response from server");
       }
 
-      // Simulate API call (Replace with actual API request)
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Explicitly cast response to the expected type
+      const data = response as unknown as {
+        upvotes: number;
+        downvotes: number;
+        userVote: "upvote" | "downvote" | null;
+      };
+
+      setLocalUpvotes(data.upvotes);
+      setLocalDownvotes(data.downvotes);
+      setLocalHasUpvoted(data.userVote === "upvote");
+      setLocalHasDownvoted(data.userVote === "downvote");
 
       toast({
         title: voteType === "upvote" ? "Upvote recorded" : "Downvote recorded",
         description: "Your vote has been updated.",
       });
-    } catch {
+    } catch (error) {
+      console.error("Vote error:", error);
       toast({
         title: "Failed to vote",
         description: "An error occurred while voting. Please try again later.",
@@ -96,9 +95,11 @@ const Votes = ({ upvotes, downvotes, hasupVoted, hasdownVoted }: Params) => {
           width={18}
           height={18}
           alt="upvote"
-          className={`cursor-pointer ${isLoading && "opacity-50"}`}
+          className={`cursor-pointer ${isLoading || isSessionLoading ? "opacity-50" : ""}`}
           aria-label="Upvote"
-          onClick={() => !isLoading && handleVote("upvote")}
+          onClick={() =>
+            !isLoading && !isSessionLoading && handleVote("upvote")
+          }
         />
 
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
@@ -116,9 +117,11 @@ const Votes = ({ upvotes, downvotes, hasupVoted, hasdownVoted }: Params) => {
           width={18}
           height={18}
           alt="downvote"
-          className={`cursor-pointer ${isLoading && "opacity-50"}`}
+          className={`cursor-pointer ${isLoading || isSessionLoading ? "opacity-50" : ""}`}
           aria-label="Downvote"
-          onClick={() => !isLoading && handleVote("downvote")}
+          onClick={() =>
+            !isLoading && !isSessionLoading && handleVote("downvote")
+          }
         />
 
         <div className="flex-center background-light700_dark400 min-w-5 rounded-sm p-1">
