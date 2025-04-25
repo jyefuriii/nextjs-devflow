@@ -1,4 +1,6 @@
+import typography from "@tailwindcss/typography";
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from 'tailwindcss-animate';
 
 const config: Config = {
   darkMode: ["class"],
@@ -29,13 +31,9 @@ const config: Config = {
           "850": "#FDFDFD",
           "900": "#FFFFFF",
         },
-      },
-      borderRadius: {
-        "2": "8px",
-        "1.5": "6px",
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        link: {
+          "100": "#1DA1F2",
+        },
       },
       boxShadow: {
         "light-100":
@@ -45,10 +43,6 @@ const config: Config = {
         "dark-100": "0px 2px 10px 0px rgba(46, 52, 56, 0.10)",
         "dark-200": "2px 0px 20px 0px rgba(39, 36, 36, 0.04)",
       },
-      backgroundImage: {
-        "auth-dark": 'url("/images/auth-dark.png")',
-        "auth-light": 'url("/images/auth-light.png")',
-      },
       screens: {
         xs: "420px",
       },
@@ -56,10 +50,19 @@ const config: Config = {
         inter: ["var(--font-inter)"],
         "space-grotesk": ["var(--font-space-grotesk)"],
       },
+      borderRadius: {
+        "2": "8px",
+        "1.5": "6px",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      backgroundImage: {
+        "auth-dark": 'url("/images/auth-dark.png")',
+        "auth-light": 'url("/images/auth-light.png")',
+      },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [tailwindcssAnimate, typography],
 };
-
 export default config;

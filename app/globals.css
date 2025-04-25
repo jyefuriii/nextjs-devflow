@@ -405,3 +405,9 @@ code {
     --radius: 0.5rem;
   }
 }
+
+[data-bright-mode="dark"]:not(html.light [data-bright-mode="dark"]),
+[data-bright-mode="light"]:not(:not(html.light [data-bright-mode="light"])) {
+  display: grid !important;
+  width: 100% !important;
+}

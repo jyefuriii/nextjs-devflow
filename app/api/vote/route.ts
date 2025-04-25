@@ -10,72 +10,81 @@ import { CreateVoteSchema } from "@/lib/validations";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log("Incoming Vote Request:", body); // ✅ Debugging
 
-    // ✅ Use action.ts for validation and authentication
     const result = await action({
       params: body,
       schema: CreateVoteSchema,
       authorize: true,
     });
 
-    // Proper error handling
     if (result instanceof Error) {
+      console.error("Validation Error:", result); // ✅ Log validation errors
       return handleError(result, "api");
     }
 
-    const { params, session } = result;
-    const { targetId, targetType, voteType } = params;
+      const { params, session } = result;
+      console.log("Validated Params:", params);
 
-    // ✅ Explicitly check if session is null or missing user
     if (!session || !session.user || !session.user.id) {
+      console.error("Unauthorized request. Session:", session); // ✅ Log session info
       return handleError(new UnauthorizedError(), "api");
     }
 
     const userId = session.user.id;
+    console.log("User ID:", userId); // ✅ Confirm user ID
 
     await dbConnect();
 
     const existingVote = await Vote.findOne({
       author: userId,
-      actionId: targetId,
-      actionType: targetType,
+      actionId: params.targetId,
+      actionType: params.targetType,
     });
 
     if (existingVote) {
-      if (existingVote.voteType === voteType) {
+      if (existingVote.voteType === params.voteType) {
         await Vote.deleteOne({ _id: existingVote._id });
       } else {
-        await Vote.findOneAndUpdate(
-          { _id: existingVote._id },
-          { voteType },
+        await Vote.findByIdAndUpdate(
+          existingVote._id,
+          { voteType: params.voteType },
           { new: true }
         );
       }
     } else {
       await Vote.create({
         author: userId,
-        actionId: targetId,
-        actionType: targetType,
-        voteType,
+        actionId: params.targetId,
+        actionType: params.targetType,
+        voteType: params.voteType,
       });
     }
 
-    // Use aggregation for optimized vote count
+    // Optimized vote count retrieval
     const [upvotes, downvotes] = await Promise.all([
       Vote.countDocuments({
-        actionId: targetId,
-        actionType: targetType,
+        actionId: params.targetId,
+        actionType: params.targetType,
         voteType: "upvote",
       }),
       Vote.countDocuments({
-        actionId: targetId,
-        actionType: targetType,
+        actionId: params.targetId,
+        actionType: params.targetType,
         voteType: "downvote",
       }),
     ]);
 
-    return NextResponse.json({ upvotes, downvotes, userVote: voteType });
+    console.log("Vote Count - Upvotes:", upvotes, "Downvotes:", downvotes); // ✅ Debug count
+
+    return NextResponse.json({
+      upvotes: upvotes ?? 0,
+      downvotes: downvotes ?? 0,
+      userVote: existingVote ? existingVote.voteType : null,
+    });
   } catch (error) {
+    console.error("API Error:", error); // ✅ Debug unexpected errors
     return handleError(error, "api");
   }
 }
+
